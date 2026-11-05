@@ -1,0 +1,274 @@
+@prefix weft:    <https://w3id.org/weft#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+@prefix schema:  <https://schema.org/> .
+
+# Weft: a vocabulary for evidence-backed career graphs.
+# The warp is the timeline of roles, studies and projects; the weft is the skills
+# threaded through them. Each skill points back to the work that shows it.
+
+# ---------------------------------------------------------------------------
+# The ontology
+# ---------------------------------------------------------------------------
+
+<https://w3id.org/weft>
+  a owl:Ontology ;
+  dcterms:title "Weft"@en ;
+  dcterms:alternative "Weft: a vocabulary for evidence-backed career graphs"@en ;
+  dcterms:description """Weft describes a person's career as a graph: the roles they held, what they
+studied, built and wrote, the credentials and awards they received, and the skills each of
+those involved. Every role, degree and project is its own node, linked to where it happened
+and to the skills it used, taught or certified, so a skill can always be traced back to the
+work behind it.
+
+Weft builds on schema.org for the kinds of things (people, organisations, roles, credentials,
+creative works, defined terms) and adds the relations that schema.org doesn't have, or only
+has as plain text. Skills can be matched to shared concepts such as ESCO or Wikidata with
+SKOS mappings. CV and portfolio sites, talent tools and research datasets can all use it;
+Graph Resume is the first application."""@en ;
+  dcterms:creator "Rishi Rajani" ;
+  dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+  dcterms:rights "© 2026 Rishi Rajani. Weft and its documentation are licensed under CC BY 4.0. Data described with Weft belongs to whoever publishes it."@en ;
+  dcterms:created "2026-10"^^xsd:gYearMonth ;
+  dcterms:issued "2026-11-05"^^xsd:date ;
+  owl:versionInfo "1.0" ;
+  owl:versionIRI <https://w3id.org/weft/1.0> ;
+  vann:preferredNamespacePrefix "weft" ;
+  vann:preferredNamespaceUri "https://w3id.org/weft#" ;
+  dcterms:source <https://github.com/rishirajani/weft> ;
+  rdfs:seeAlso <https://schema.org/> , <http://www.w3.org/2004/02/skos/core> , <https://rishirajani.github.io/Graph-Resume/> .
+
+# ---------------------------------------------------------------------------
+# Classes
+# Weft mostly uses schema.org classes; these two have no schema.org equivalent.
+# ---------------------------------------------------------------------------
+
+weft:Award a owl:Class ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "Award"@en ;
+  rdfs:comment "A recognition given to the person, for example by an employer. schema.org only has award as a text property, so this makes awards nodes that can be linked to who gave them."@en ;
+  rdfs:subClassOf schema:Thing ;
+  rdfs:seeAlso schema:award .
+
+weft:CareerBreak a owl:Class ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "Career break"@en ;
+  rdfs:comment "A period between roles, with what happened during it. Lets a gap be described honestly instead of left blank."@en ;
+  rdfs:subClassOf schema:Thing .
+
+# ---------------------------------------------------------------------------
+# Relations from the person
+# ---------------------------------------------------------------------------
+
+weft:heldRole a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "held role"@en ;
+  rdfs:comment "The person held this role. Use the more specific worked as (finished) or works as (current)."@en ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:OrganizationRole ;
+  rdfs:seeAlso schema:hasOccupation .
+
+weft:workedAs a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "worked as"@en ;
+  rdfs:comment "The person held this role in the past; the role has an end date."@en ;
+  rdfs:subPropertyOf weft:heldRole ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:OrganizationRole .
+
+weft:worksAs a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "works as"@en ;
+  rdfs:comment "The person holds this role now; the role has no end date."@en ;
+  rdfs:subPropertyOf weft:heldRole ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:OrganizationRole .
+
+weft:studied a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "studied"@en ;
+  rdfs:comment "The person studied for this degree or certificate, finished or still in progress. (schema:hasCredential would claim the credential is already held.)"@en ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:EducationalOccupationalCredential ;
+  rdfs:seeAlso schema:hasCredential , schema:alumniOf .
+
+weft:holds a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "holds"@en ;
+  rdfs:comment "The person holds this certification."@en ;
+  rdfs:subPropertyOf schema:hasCredential ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:EducationalOccupationalCredential .
+
+weft:built a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "built"@en ;
+  rdfs:comment "The person built or authored this project."@en ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:CreativeWork ;
+  rdfs:seeAlso schema:creator .
+
+weft:wrote a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "wrote"@en ;
+  rdfs:comment "The person is an author of this publication."@en ;
+  owl:inverseOf schema:author ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:ScholarlyArticle .
+
+weft:speaks a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "speaks"@en ;
+  rdfs:comment "The person speaks this language; how well is given by proficiency on the language."@en ;
+  rdfs:subPropertyOf schema:knowsLanguage ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:Language .
+
+weft:received a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "received"@en ;
+  rdfs:comment "The person received this award."@en ;
+  rdfs:domain schema:Person ;
+  rdfs:range weft:Award ;
+  rdfs:seeAlso schema:award .
+
+weft:focusOn a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "specialises in"@en ;
+  rdfs:comment "One of the person's skill areas."@en ;
+  rdfs:domain schema:Person ;
+  rdfs:range schema:DefinedTermSet .
+
+weft:took a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "took"@en ;
+  rdfs:comment "The person took this career break."@en ;
+  rdfs:domain schema:Person ;
+  rdfs:range weft:CareerBreak .
+
+# ---------------------------------------------------------------------------
+# Relations between experience, education and projects
+# ---------------------------------------------------------------------------
+
+weft:at a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "at"@en ;
+  rdfs:comment "Where a role was held (the employer) or where a degree or certificate was studied (the school)."@en ;
+  rdfs:domain [ a owl:Class ; owl:unionOf ( schema:OrganizationRole schema:EducationalOccupationalCredential ) ] ;
+  rdfs:range schema:Organization ;
+  rdfs:seeAlso schema:worksFor , schema:alumniOf .
+
+weft:promotedFrom a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "promoted from"@en ;
+  rdfs:comment "This role followed the earlier role through a promotion at the same organisation."@en ;
+  rdfs:domain schema:OrganizationRole ;
+  rdfs:range schema:OrganizationRole .
+
+weft:ledTo a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "led to"@en ;
+  rdfs:comment "A programme of study that led directly to this role, for example a certificate run with an employer."@en ;
+  rdfs:domain schema:EducationalOccupationalCredential ;
+  rdfs:range schema:OrganizationRole .
+
+weft:runWith a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "run with"@en ;
+  rdfs:comment "An organisation that co-ran this programme with the school."@en ;
+  rdfs:domain schema:EducationalOccupationalCredential ;
+  rdfs:range schema:Organization .
+
+weft:partOf a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "part of"@en ;
+  rdfs:comment "This project was done as part of a degree or a larger work, for example a thesis within a master's."@en ;
+  rdfs:domain schema:CreativeWork ;
+  rdfs:range [ a owl:Class ; owl:unionOf ( schema:EducationalOccupationalCredential schema:CreativeWork ) ] ;
+  rdfs:seeAlso schema:isPartOf .
+
+weft:included a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "included"@en ;
+  rdfs:comment "Something done during a career break, such as freelance work or a certification."@en ;
+  rdfs:domain weft:CareerBreak ;
+  rdfs:range [ a owl:Class ; owl:unionOf ( schema:OrganizationRole schema:EducationalOccupationalCredential schema:CreativeWork ) ] .
+
+weft:awardedBy a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "awarded by"@en ;
+  rdfs:comment "The organisation that gave the award."@en ;
+  rdfs:domain weft:Award ;
+  rdfs:range schema:Organization ;
+  rdfs:seeAlso schema:recognizedBy .
+
+# ---------------------------------------------------------------------------
+# Skills
+# ---------------------------------------------------------------------------
+
+weft:used a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "used"@en ;
+  rdfs:comment "A skill put to use in this role, project or career break, including a language used at work. Together with trained in and shows, it ties each skill to the work behind it."@en ;
+  rdfs:domain [ a owl:Class ; owl:unionOf ( schema:OrganizationRole schema:CreativeWork weft:CareerBreak weft:Award ) ] ;
+  rdfs:range [ a owl:Class ; owl:unionOf ( schema:DefinedTerm schema:Language ) ] ;
+  rdfs:seeAlso schema:skills .
+
+weft:trainedIn a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "trained in"@en ;
+  rdfs:comment "A skill taught or practised during this degree or course."@en ;
+  rdfs:domain schema:EducationalOccupationalCredential ;
+  rdfs:range schema:DefinedTerm ;
+  rdfs:seeAlso schema:teaches .
+
+weft:shows a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "shows"@en ;
+  rdfs:comment "A skill this certification is evidence of."@en ;
+  rdfs:domain schema:EducationalOccupationalCredential ;
+  rdfs:range schema:DefinedTerm ;
+  rdfs:seeAlso schema:competencyRequired .
+
+weft:inGroup a owl:ObjectProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "belongs to"@en ;
+  rdfs:comment "The skill area this skill is grouped under. Weft doesn't limit how many; an application can (Graph Resume allows one)."@en ;
+  rdfs:subPropertyOf schema:inDefinedTermSet ;
+  rdfs:domain schema:DefinedTerm ;
+  rdfs:range schema:DefinedTermSet .
+
+# ---------------------------------------------------------------------------
+# Plain values
+# ---------------------------------------------------------------------------
+
+weft:kind a owl:DatatypeProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "kind"@en ;
+  rdfs:comment "An application's own label for what kind of item this is (for example Role, Education, Certification, Project, Skill). Several kinds can share a schema.org type: a degree and a certification are both schema:EducationalOccupationalCredential, and kind keeps them apart without new classes."@en ;
+  rdfs:range xsd:string .
+
+weft:highlight a owl:DatatypeProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "highlight"@en ;
+  rdfs:comment "One achievement or responsibility in a role, degree or project, as one short statement (like a bullet point on a CV). Order is not significant."@en ;
+  rdfs:range xsd:string .
+
+weft:location a owl:DatatypeProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "location"@en ;
+  rdfs:comment "Where it took place, as free text (city and country, or remote). Use schema:location for a structured place."@en ;
+  rdfs:range xsd:string ;
+  rdfs:seeAlso schema:location .
+
+weft:proficiency a owl:DatatypeProperty ;
+  rdfs:isDefinedBy <https://w3id.org/weft> ;
+  rdfs:label "proficiency"@en ;
+  rdfs:comment "How well a language is spoken: a CEFR level (A1 to C2) or Native, Fluent or Basic."@en ;
+  rdfs:domain schema:Language ;
+  rdfs:range xsd:string .

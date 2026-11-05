@@ -1,0 +1,86 @@
+# SHACL shapes for data described with Weft.
+# Violations mean the data contradicts what a Weft term says; warnings point at things
+# that are allowed but usually a mistake. Applications can add stricter shapes of their own.
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema: <https://schema.org/> .
+@prefix weft:   <https://w3id.org/weft#> .
+@prefix wefts:  <https://w3id.org/weft/shapes#> .
+
+<https://w3id.org/weft/shapes> a owl:Ontology ;
+  rdfs:label "Weft shapes"@en ;
+  dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+  owl:imports <https://w3id.org/weft> ;
+  sh:declare [ sh:prefix "weft" ; sh:namespace "https://w3id.org/weft#"^^xsd:anyURI ] ,
+             [ sh:prefix "schema" ; sh:namespace "https://schema.org/"^^xsd:anyURI ] .
+
+# A role is at exactly one organisation.
+wefts:Role a sh:NodeShape ;
+  sh:targetObjectsOf weft:heldRole , weft:workedAs , weft:worksAs ;
+  sh:property [ sh:path weft:at ; sh:minCount 1 ; sh:maxCount 1 ;
+                sh:message "A role is at exactly one organisation (weft:at)." ] ;
+  sh:property [ sh:path schema:startDate ; sh:minCount 1 ; sh:severity sh:Warning ;
+                sh:message "A role usually has a start date." ] .
+
+# worked as is for roles that ended; works as is for current ones.
+wefts:PastRole a sh:NodeShape ;
+  sh:targetObjectsOf weft:workedAs ;
+  sh:property [ sh:path schema:endDate ; sh:minCount 1 ; sh:severity sh:Warning ;
+                sh:message "weft:workedAs is for a role that ended; this one has no end date (use weft:worksAs)." ] .
+
+wefts:CurrentRole a sh:NodeShape ;
+  sh:targetObjectsOf weft:worksAs ;
+  sh:property [ sh:path schema:endDate ; sh:maxCount 0 ;
+                sh:message "weft:worksAs is for a current role; this one has an end date (use weft:workedAs)." ] .
+
+# An end date never comes before the start date (ISO dates compare as text).
+wefts:DateOrder a sh:NodeShape ;
+  sh:targetSubjectsOf schema:endDate ;
+  sh:sparql [ a sh:SPARQLConstraint ;
+      sh:message "The end date is before the start date." ;
+      sh:prefixes <https://w3id.org/weft/shapes> ;
+      sh:select """SELECT $this WHERE { $this schema:startDate ?s ; schema:endDate ?e . FILTER (STR(?e) < SUBSTR(STR(?s), 1, STRLEN(STR(?e)))) }""" ] .
+
+# Dates are ISO 8601: YYYY, YYYY-MM or YYYY-MM-DD.
+wefts:Dates a sh:NodeShape ;
+  sh:targetSubjectsOf schema:startDate , schema:endDate ;
+  sh:property [ sh:path schema:startDate ; sh:maxCount 1 ; sh:pattern "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$" ;
+                sh:message "Dates are written as YYYY, YYYY-MM or YYYY-MM-DD." ] ;
+  sh:property [ sh:path schema:endDate ; sh:maxCount 1 ; sh:pattern "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$" ;
+                sh:message "Dates are written as YYYY, YYYY-MM or YYYY-MM-DD." ] .
+
+# A promotion stays at the same organisation.
+wefts:Promotion a sh:NodeShape ;
+  sh:targetSubjectsOf weft:promotedFrom ;
+  sh:sparql [ a sh:SPARQLConstraint ;
+      sh:message "weft:promotedFrom links roles at different organisations." ;
+      sh:prefixes <https://w3id.org/weft/shapes> ;
+      sh:select """SELECT $this WHERE { $this weft:promotedFrom ?earlier ; weft:at ?a . ?earlier weft:at ?b . FILTER (?a != ?b) }""" ] .
+
+# Awards name who gave them.
+wefts:Award a sh:NodeShape ;
+  sh:targetClass weft:Award ;
+  sh:property [ sh:path weft:awardedBy ; sh:minCount 1 ; sh:severity sh:Warning ;
+                sh:message "An award usually says who gave it (weft:awardedBy)." ] .
+
+# Languages: one proficiency, preferably a CEFR level or Native / Fluent / Basic.
+wefts:Language a sh:NodeShape ;
+  sh:targetObjectsOf weft:speaks ;
+  sh:property [ sh:path weft:proficiency ; sh:maxCount 1 ;
+                sh:message "A language has one proficiency." ] ;
+  sh:property [ sh:path weft:proficiency ; sh:severity sh:Warning ;
+                sh:pattern "^([ABC][12]|Native|Fluent|Basic)$" ;
+                sh:message "Proficiency is usually a CEFR level (A1 to C2) or Native, Fluent or Basic." ] .
+
+# The point of Weft: a skill is backed by something. A warning, because a skill can
+# be listed before the work that shows it is described.
+wefts:BackedSkill a sh:NodeShape ;
+  sh:targetSubjectsOf weft:inGroup ;
+  sh:severity sh:Warning ;
+  sh:sparql [ a sh:SPARQLConstraint ;
+      sh:message "No role, project, course, certification, break or award points to this skill (weft:used, weft:trainedIn or weft:shows)." ;
+      sh:prefixes <https://w3id.org/weft/shapes> ;
+      sh:select """SELECT $this WHERE { FILTER NOT EXISTS { ?x weft:used|weft:trainedIn|weft:shows $this } }""" ] .

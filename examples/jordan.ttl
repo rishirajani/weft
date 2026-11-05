@@ -1,0 +1,176 @@
+# A made-up person, described with Weft. Every Weft term appears at least once.
+# Jordan Example, the organisations and the projects are fictional.
+@prefix weft:   <https://w3id.org/weft#> .
+@prefix schema: <https://schema.org/> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix ex:     <https://example.org/jordan#> .
+
+# --- The person -------------------------------------------------------------
+
+ex:me a schema:Person ;
+  schema:name "Jordan Example" ;
+  weft:kind "Person" ;
+  weft:workedAs ex:r-analyst ;
+  weft:worksAs ex:r-senior ;
+  weft:studied ex:e-bsc , ex:e-academy ;
+  weft:holds ex:c-cloud ;
+  weft:built ex:p-dashboard ;
+  weft:wrote ex:pub-note ;
+  weft:speaks ex:l-english , ex:l-german ;
+  weft:received ex:a-team ;
+  weft:focusOn ex:g-data , ex:g-stats ;
+  weft:took ex:b-gap .
+
+# --- Work -------------------------------------------------------------------
+
+ex:o-lumen a schema:Organization ;
+  schema:name "Lumen Freight" ;
+  weft:kind "Organization" .
+
+ex:r-analyst a schema:OrganizationRole ;
+  schema:name "Data Analyst" ;
+  weft:kind "Role" ;
+  schema:startDate "2020-09" ;
+  schema:endDate "2023-02" ;
+  weft:location "Hamburg, Germany" ;
+  weft:highlight "Replaced a weekly spreadsheet report with a SQL model and a dashboard the operations team checks every morning." ;
+  weft:at ex:o-lumen ;
+  weft:used ex:s-sql , ex:s-python , ex:l-german .
+
+ex:r-senior a schema:OrganizationRole ;
+  schema:name "Senior Data Analyst" ;
+  weft:kind "Role" ;
+  schema:startDate "2023-03" ;
+  weft:location "Hamburg, Germany" ;
+  weft:highlight "Leads the delivery-delay analysis for three regional depots." ;
+  weft:at ex:o-lumen ;
+  weft:promotedFrom ex:r-analyst ;
+  weft:used ex:s-sql , ex:s-dbt .
+
+ex:p-dashboard a schema:CreativeWork ;
+  schema:name "Delivery delay dashboard" ;
+  weft:kind "Project" ;
+  schema:startDate "2023-05" ;
+  schema:endDate "2023-09" ;
+  weft:used ex:s-sql , ex:s-dbt .
+
+ex:a-team a weft:Award ;
+  schema:name "Team award for the depot analytics rollout" ;
+  weft:kind "Award" ;
+  schema:startDate "2024-01" ;
+  weft:awardedBy ex:o-lumen ;
+  weft:used ex:s-dbt .
+
+# --- Study ------------------------------------------------------------------
+
+ex:u-example a schema:CollegeOrUniversity ;
+  schema:name "Example University of Applied Sciences" ;
+  weft:kind "School" .
+
+ex:e-bsc a schema:EducationalOccupationalCredential ;
+  schema:name "B.Sc. Statistics" ;
+  weft:kind "Education" ;
+  schema:startDate "2016-10" ;
+  schema:endDate "2020-07" ;
+  weft:at ex:u-example ;
+  weft:trainedIn ex:s-stats , ex:s-python .
+
+ex:p-thesis a schema:CreativeWork ;
+  schema:name "Bachelor's thesis: forecasting weekly parcel volumes" ;
+  weft:kind "Project" ;
+  schema:startDate "2020-02" ;
+  schema:endDate "2020-07" ;
+  weft:partOf ex:e-bsc ;
+  weft:used ex:s-stats , ex:s-python .
+
+ex:pub-note a schema:ScholarlyArticle ;
+  schema:name "A short note on seasonal parcel forecasts" ;
+  weft:kind "Publication" ;
+  schema:author ex:me ;
+  schema:startDate "2021-03" .
+
+ex:o-academy a schema:CollegeOrUniversity ;
+  schema:name "Example Data Academy" ;
+  weft:kind "School" .
+
+ex:e-academy a schema:EducationalOccupationalCredential ;
+  schema:name "Analytics Engineering Certificate" ;
+  weft:kind "Education" ;
+  schema:startDate "2020-07" ;
+  schema:endDate "2020-08" ;
+  weft:at ex:o-academy ;
+  weft:runWith ex:o-lumen ;
+  weft:ledTo ex:r-analyst ;
+  weft:trainedIn ex:s-sql .
+
+ex:c-cloud a schema:EducationalOccupationalCredential ;
+  schema:name "Cloud Data Practitioner" ;
+  weft:kind "Certification" ;
+  schema:startDate "2016-05" ;
+  weft:shows ex:s-sql .
+
+# --- A gap year -------------------------------------------------------------
+
+ex:b-gap a weft:CareerBreak ;
+  schema:name "Gap year" ;
+  weft:kind "Break" ;
+  schema:startDate "2015-09" ;
+  schema:endDate "2016-09" ;
+  schema:description "Travelled, volunteered with a food bank, and took a certification." ;
+  weft:included ex:p-foodbank , ex:c-cloud ;
+  weft:used ex:s-sheets .
+
+ex:p-foodbank a schema:CreativeWork ;
+  schema:name "Food bank stock tracker (volunteer)" ;
+  weft:kind "Project" ;
+  weft:used ex:s-sheets .
+
+# --- Languages --------------------------------------------------------------
+
+ex:l-english a schema:Language ;
+  schema:name "English" ;
+  weft:kind "Language" ;
+  weft:proficiency "Native" .
+
+ex:l-german a schema:Language ;
+  schema:name "German" ;
+  weft:kind "Language" ;
+  weft:proficiency "B2" .
+
+# --- Skills -----------------------------------------------------------------
+
+ex:g-data a schema:DefinedTermSet ;
+  schema:name "Data engineering" ;
+  weft:kind "SkillGroup" .
+
+ex:g-stats a schema:DefinedTermSet ;
+  schema:name "Statistics" ;
+  weft:kind "SkillGroup" .
+
+ex:s-sql a schema:DefinedTerm ;
+  schema:name "SQL" ;
+  weft:kind "Skill" ;
+  weft:inGroup ex:g-data ;
+  skos:exactMatch <http://www.wikidata.org/entity/Q47607> .
+
+ex:s-dbt a schema:DefinedTerm ;
+  schema:name "dbt" ;
+  weft:kind "Skill" ;
+  weft:inGroup ex:g-data .
+
+ex:s-python a schema:DefinedTerm ;
+  schema:name "Python" ;
+  weft:kind "Skill" ;
+  weft:inGroup ex:g-data ;
+  skos:exactMatch <http://www.wikidata.org/entity/Q28865> .
+
+ex:s-stats a schema:DefinedTerm ;
+  schema:name "Statistical modelling" ;
+  weft:kind "Skill" ;
+  weft:inGroup ex:g-stats ;
+  skos:closeMatch <http://www.wikidata.org/entity/Q12483> .
+
+ex:s-sheets a schema:DefinedTerm ;
+  schema:name "Spreadsheets" ;
+  weft:kind "Skill" ;
+  weft:inGroup ex:g-data .
