@@ -12,8 +12,10 @@ It builds on [schema.org](https://schema.org/) for the kinds of things and adds 
 schema.org doesn't have. Skills can be matched to [ESCO](https://esco.ec.europa.eu/) or
 [Wikidata](https://www.wikidata.org/) with SKOS.
 
-- **Documentation:** <https://rishirajani.github.io/weft/> (permanent IRI
-  `https://w3id.org/weft`, once the w3id.org registration is merged)
+- **Permanent IRI:** <https://w3id.org/weft>. Browsers get the documentation
+  (hosted at <https://rishirajani.github.io/weft/>); RDF clients asking for
+  `text/turtle`, `application/ld+json`, `application/rdf+xml` or
+  `application/n-triples` get that format
 - **Namespace:** `https://w3id.org/weft#`, prefix `weft:`
 - **Version:** 1.0 (`https://w3id.org/weft/1.0`), see the [changelog](CHANGELOG.md)
 - **Licence:** [CC BY 4.0](LICENSE). Data you describe with Weft is yours.
