@@ -2,6 +2,8 @@
 
 **A vocabulary for evidence-backed career graphs.**
 
+Why it exists: [My CV Is a Knowledge Graph Now](https://rishi-rajani.medium.com/my-cv-is-a-knowledge-graph-now-140f447fde92).
+
 Weft is a small, open OWL vocabulary for describing a career as a graph: the roles a person
 held, what they studied, built and wrote, the credentials and awards they received, and the
 skills each of those involved. Every role, degree and project is its own node, linked to where
