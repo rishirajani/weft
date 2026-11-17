@@ -52,6 +52,7 @@ The full [example](examples/jordan.ttl) is a made-up person that uses every term
 | [`ontology/weft.ttl`](ontology/weft.ttl) | The ontology: 2 classes, 22 relations, 4 value properties. |
 | [`shapes/weft.shacl.ttl`](shapes/weft.shacl.ttl) | SHACL shapes for Weft data, including a warning for skills nothing backs up. |
 | [`examples/jordan.ttl`](examples/jordan.ttl) | The example. |
+| [`competency-questions.md`](competency-questions.md) | The questions Weft is built to answer, each with a SPARQL query and its answer on the example. |
 | [`tools/check.py`](tools/check.py) | Checks that data uses Weft's terms with the right domains and ranges. |
 | [`tools/build.py`](tools/build.py) | Runs all checks and builds the website (documentation, Turtle, JSON-LD, RDF/XML, N-Triples, JSON-LD context). |
 | [`releases/`](releases/) | Earlier versions, kept so their version IRIs keep resolving. |
